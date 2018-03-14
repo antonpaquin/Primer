@@ -1,0 +1,41 @@
+This describes a protocol for two way communication on two busses without a 
+clock signal.
+
+This protocol probably has a name but I don't know what it is.
+
+A sends data to B, then B sends a response back to A.
+
+A drives the REQ signal, and sends data_a on the bus A Out B In (AOBI)
+B drives the ACK signal, and sends data_b on the bus B Out A In (BOAI)
+
+0. Initial --  A writes to AOBI then asserts REQ
+	REQ = 1
+	ACK = 0
+	BUS_AOBI = data_a
+	BUS_BOAI = don't care
+
+1. B latches AOBI, disables BOAI (if enabled), then asserts ACK
+        REQ = 1
+	ACK = 1
+	BUS_AOBI = data_a
+	BUS_BOAI = don't care
+
+2. A lowers REQ and disables AOBI
+	REQ = 0
+	ACK = 1
+	BUS_AOBI = don't care
+	BUS_BOAI = don't care
+
+3. B writes to BOAI then lowers ACK
+	REQ = 0
+	ACK = 0
+	BUS_AOBI = don't care
+	BUS_BOAI = data_b
+
+4. A latches BOAI, writes AOBI, then asserts REQ
+	REQ = 1
+	ACK = 0
+	BUS_AOBI = data_a
+	BUS_BOAI = data_b
+
+5. (State 1)
